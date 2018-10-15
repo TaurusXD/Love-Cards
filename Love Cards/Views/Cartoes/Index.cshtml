@@ -1,0 +1,44 @@
+﻿@model  List<Love_Cards.Models.Produto>
+@{
+    ViewBag.Title = "Cartoes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Cartões</h2>
+
+<section>
+    @{
+        Html.RenderAction("ListarProduto", "Cartoes", new { lista = Model });
+    }
+    <br />
+    <br />
+    <div style="text-align:center;">
+        <a id="carregarMais" class="btn btn-primary" data-loading-text="<i class='fa fa-spin fa-spinner' ></i> Carregando...">Carregar mais</a>
+    </div>
+</section>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var bloco = 2;
+        var clicou = false;
+        var ultimoBloco = false;
+        $('#carregarMais').click(function () {
+            if (!ultimoBloco && !clicou) {
+                clicou = true;
+                var btn = $(this);
+                btn.button('loading');
+                $.post('@Url.Action("CarregarBlocoProduto", "Cartoes")', { 'bloco': bloco }, function (data) {
+                    bloco++;
+                    ultimoBloco = data.UltimoBloco;
+                    $('#listaProduto').append(data.Html);
+                    btn.button('reset');
+                    clicou = false;
+                    if (ultimoBloco) {
+                        setTimeout(function () {
+                        btn.addClass('disabled');
+                        }, 0);
+                    }
+                });
+            }
+        });
+    });
+</script>
